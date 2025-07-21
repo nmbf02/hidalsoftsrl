@@ -181,6 +181,13 @@ const translations = {
       contactPhonePlaceholder: "809-000-0000",
       emailPlaceholder: "correo@empresa.com",
     },
+    settings: {
+      title: "Configuración",
+      language: "Idioma",
+      theme: "Tema",
+      light: "Claro",
+      dark: "Oscuro",
+    },
   },
   en: {
     nav: {
@@ -324,6 +331,13 @@ const translations = {
       contactPhonePlaceholder: "809-000-0000",
       emailPlaceholder: "email@company.com",
     },
+    settings: {
+      title: "Settings",
+      language: "Language",
+      theme: "Theme",
+      light: "Light",
+      dark: "Dark",
+    },
   },
 }
 
@@ -340,6 +354,7 @@ export default function HomePage() {
   const [selectedHowDidYouHear, setSelectedHowDidYouHear] = useState("")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSettingsBubbleOpen, setIsSettingsBubbleOpen] = useState(false)
 
   const t = translations[language]
 
@@ -483,35 +498,7 @@ export default function HomePage() {
 
             {/* Desktop Controls */}
             <div className="hidden md:flex items-center space-x-3">
-              <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleLanguage}
-                  className={`p-2 rounded-md transition-all duration-300 hover:scale-105 ${
-                    isDarkMode ? "hover:bg-slate-700 text-slate-300" : "hover:bg-white text-slate-600"
-                  }`}
-                >
-                  <Languages className="h-4 w-4" />
-                  <span className="text-xs font-medium ml-1 hidden sm:block">{language.toUpperCase()}</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleDarkMode}
-                  className={`p-2 rounded-md transition-all duration-300 hover:scale-105 ${
-                    isDarkMode ? "hover:bg-slate-700 text-slate-300" : "hover:bg-white text-slate-600"
-                  }`}
-                >
-                  {isDarkMode ? (
-                    <Sun className="h-4 w-4 rotate-0 scale-100 transition-all duration-300" />
-                  ) : (
-                    <Moon className="h-4 w-4 rotate-0 scale-100 transition-all duration-300" />
-                  )}
-                </Button>
-              </div>
-
+              {/* Login Button */}
               <Button
                 variant="outline"
                 size="sm"
@@ -526,6 +513,7 @@ export default function HomePage() {
                 <span className="text-sm hidden sm:block">{t.nav.login}</span>
               </Button>
 
+              {/* CTA Button */}
               <Button
                 onClick={() => setIsQuoteModalOpen(true)}
                 className="bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm px-4 py-2"
@@ -1416,6 +1404,135 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Settings Floating Bubble - Above WhatsApp */}
+      <div className="fixed bottom-24 right-6 z-40">
+        <div className="relative">
+          {/* Settings Button */}
+          <Button
+            size="sm"
+            onClick={() => setIsSettingsBubbleOpen(!isSettingsBubbleOpen)}
+            className={`rounded-full p-3 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 ${
+              isDarkMode
+                ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600"
+                : "bg-white hover:bg-slate-50 text-slate-600 border border-slate-200"
+            }`}
+            title={t.settings.title}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </Button>
+
+          {/* Settings Bubble */}
+          {isSettingsBubbleOpen && (
+            <>
+              {/* Backdrop */}
+              <div className="fixed inset-0 z-30" onClick={() => setIsSettingsBubbleOpen(false)}></div>
+
+              {/* Bubble Content */}
+              <div
+                className={`absolute bottom-full right-0 mb-2 w-48 rounded-xl shadow-2xl border z-40 transform transition-all duration-300 ${
+                  isDarkMode ? "bg-slate-800 border-slate-600" : "bg-white border-slate-200"
+                }`}
+              >
+                {/* Arrow pointing down */}
+                <div
+                  className={`absolute -bottom-2 right-4 w-4 h-4 rotate-45 ${
+                    isDarkMode
+                      ? "bg-slate-800 border-r border-b border-slate-600"
+                      : "bg-white border-r border-b border-slate-200"
+                  }`}
+                ></div>
+
+                <div className="p-4 space-y-4">
+                  <h3 className={`text-sm font-semibold ${isDarkMode ? "text-white" : "text-slate-900"}`}>
+                    {t.settings.title}
+                  </h3>
+
+                  {/* Language Toggle */}
+                  <div className="space-y-2">
+                    <label className={`text-xs font-medium ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                      {t.settings.language}
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant={language === "es" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setLanguage("es")}
+                        className={`flex-1 text-xs ${
+                          language === "es"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : isDarkMode
+                              ? "border-slate-600 text-slate-300 hover:bg-slate-700"
+                              : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        ES
+                      </Button>
+                      <Button
+                        variant={language === "en" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setLanguage("en")}
+                        className={`flex-1 text-xs ${
+                          language === "en"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : isDarkMode
+                              ? "border-slate-600 text-slate-300 hover:bg-slate-700"
+                              : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        EN
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Theme Toggle */}
+                  <div className="space-y-2">
+                    <label className={`text-xs font-medium ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                      {t.settings.theme}
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant={!isDarkMode ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setIsDarkMode(false)}
+                        className={`flex-1 text-xs ${
+                          !isDarkMode
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : "border-slate-600 text-slate-300 hover:bg-slate-700"
+                        }`}
+                      >
+                        <Sun className="w-3 h-3 mr-1" />
+                        {t.settings.light}
+                      </Button>
+                      <Button
+                        variant={isDarkMode ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setIsDarkMode(true)}
+                        className={`flex-1 text-xs ${
+                          isDarkMode
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Moon className="w-3 h-3 mr-1" />
+                        {t.settings.dark}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
       {/* WhatsApp Floating Button */}
       <div className="fixed bottom-6 right-6 z-40">
