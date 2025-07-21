@@ -99,17 +99,17 @@ const translations = {
           industry: "Manufactura",
         },
         {
-          name: "Repuestos Americanos",
+          name: "Ameriparts, S.R.L.",
           description: "Distribuidora especializada en repuestos nuevos para vehículos americanos.",
           industry: "Automotriz",
         },
         {
-          name: "Soluciones Energéticas",
+          name: "Enestars",
           description: "Pioneros en proyectos fotovoltaicos y sistemas de refrigeración eficientes.",
           industry: "Energía",
         },
         {
-          name: "Agencia de Aduanas",
+          name: "Gadex",
           description: "Gestiones aduanales profesionales. Representantes oficiales de UPS y DHL.",
           industry: "Logística",
         },
