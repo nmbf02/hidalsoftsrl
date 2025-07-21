@@ -13,19 +13,22 @@ import {
   Zap,
   Star,
   TrendingUp,
-  MessageCircle,
   Sun,
   Moon,
   Languages,
   LogIn,
   X,
-  ChevronDown,
+  Menu,
 } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // Translations object
 const translations = {
@@ -150,11 +153,6 @@ const translations = {
       rememberMe: "Recordarme",
       forgotPassword: "¿Olvidaste tu contraseña?",
       loginButton: "Iniciar Sesión",
-      noAccount: "¿No tienes cuenta?",
-      signUp: "Regístrate aquí",
-      or: "o continúa con",
-      google: "Google",
-      microsoft: "Microsoft",
       close: "Cerrar",
     },
     quote: {
@@ -305,11 +303,6 @@ const translations = {
       rememberMe: "Remember me",
       forgotPassword: "Forgot your password?",
       loginButton: "Sign In",
-      noAccount: "Don't have an account?",
-      signUp: "Sign up here",
-      or: "or continue with",
-      google: "Google",
-      microsoft: "Microsoft",
       close: "Close",
     },
     quote: {
@@ -346,6 +339,7 @@ export default function HomePage() {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const [selectedHowDidYouHear, setSelectedHowDidYouHear] = useState("")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const t = translations[language]
 
@@ -369,14 +363,12 @@ export default function HomePage() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
 
-      // Show/hide navbar based on scroll direction
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsNavbarVisible(false)
       } else {
         setIsNavbarVisible(true)
       }
 
-      // Add background blur when scrolled
       setScrolled(currentScrollY > 50)
       setLastScrollY(currentScrollY)
     }
@@ -391,6 +383,13 @@ export default function HomePage() {
 
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => !prev)
+  }
+
+  const handleMobileMenuClick = (sectionId: string) => {
+    setIsMobileMenuOpen(false)
+    setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" })
+    }, 300)
   }
 
   const services = [
@@ -468,11 +467,23 @@ export default function HomePage() {
               </div>
             </nav>
 
-            {/* Controls */}
-            <div className="flex items-center space-x-3">
-              {/* Language & Theme Toggle Combined */}
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className={`p-2 rounded-md transition-all duration-300 hover:scale-105 ${
+                  isDarkMode ? "hover:bg-slate-800 text-slate-300" : "hover:bg-slate-100 text-slate-600"
+                }`}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Desktop Controls */}
+            <div className="hidden md:flex items-center space-x-3">
               <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                {/* Language Toggle */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -485,7 +496,6 @@ export default function HomePage() {
                   <span className="text-xs font-medium ml-1 hidden sm:block">{language.toUpperCase()}</span>
                 </Button>
 
-                {/* Dark Mode Toggle */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -502,7 +512,6 @@ export default function HomePage() {
                 </Button>
               </div>
 
-              {/* Login Button */}
               <Button
                 variant="outline"
                 size="sm"
@@ -517,10 +526,9 @@ export default function HomePage() {
                 <span className="text-sm hidden sm:block">{t.nav.login}</span>
               </Button>
 
-              {/* CTA Button - Solo en desktop */}
               <Button
                 onClick={() => setIsQuoteModalOpen(true)}
-                className="hidden lg:flex bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm px-4 py-2"
+                className="bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm px-4 py-2"
               >
                 {t.nav.solicitar}
               </Button>
@@ -528,6 +536,119 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+
+          <div
+            className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] transform transition-transform duration-300 ease-in-out ${
+              isDarkMode ? "bg-slate-900" : "bg-white"
+            } shadow-2xl`}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+              <img src="/hidalsoft-logo.png" alt="HidalSoft Logo" className="h-6 w-auto" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`rounded-full p-2 ${
+                  isDarkMode ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-600"
+                }`}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <nav className="px-6 py-4">
+              <div className="space-y-2">
+                {[
+                  { key: "inicio", label: t.nav.inicio },
+                  { key: "nosotros", label: t.nav.nosotros },
+                  { key: "servicios", label: t.nav.servicios },
+                  { key: "clientes", label: t.nav.clientes },
+                  { key: "contacto", label: t.nav.contacto },
+                ].map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => handleMobileMenuClick(item.key)}
+                    className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors duration-300 ${
+                      isDarkMode
+                        ? "text-slate-300 hover:text-blue-400 hover:bg-slate-800"
+                        : "text-slate-600 hover:text-blue-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </nav>
+
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    Configuración
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleLanguage}
+                      className={`p-2 rounded-md ${
+                        isDarkMode ? "hover:bg-slate-800 text-slate-300" : "hover:bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      <Languages className="h-4 w-4" />
+                      <span className="text-xs font-medium ml-1">{language.toUpperCase()}</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleDarkMode}
+                      className={`p-2 rounded-md ${
+                        isDarkMode ? "hover:bg-slate-800 text-slate-300" : "hover:bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsLoginModalOpen(true)
+                  }}
+                  className={`w-full justify-center ${
+                    isDarkMode
+                      ? "border-slate-600 text-slate-300 hover:bg-slate-800"
+                      : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  {t.nav.login}
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsQuoteModalOpen(true)
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white shadow-lg"
+                >
+                  {t.nav.solicitar}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add padding to account for fixed header */}
       <div className="pt-16">
@@ -601,7 +722,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Floating Elements */}
           <div className="absolute top-20 right-10 w-4 h-4 bg-blue-400 rounded-full animate-bounce"></div>
           <div className="absolute bottom-20 left-10 w-6 h-6 bg-indigo-400 rounded-full animate-bounce animation-delay-1000"></div>
           <div className="absolute top-1/2 right-1/4 w-3 h-3 bg-purple-400 rounded-full animate-bounce animation-delay-2000"></div>
@@ -842,7 +962,6 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-              {/* Contact Info */}
               <div className="space-y-8">
                 {[
                   {
@@ -887,7 +1006,6 @@ export default function HomePage() {
                   </div>
                 ))}
 
-                {/* Contact Buttons */}
                 <div className="pt-6 space-y-4">
                   <Button
                     size="lg"
@@ -907,7 +1025,6 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Map */}
               <div
                 className={`transform transition-all duration-1000 delay-300 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
               >
@@ -925,7 +1042,6 @@ export default function HomePage() {
                       title="Ubicación de HidalSoft en Bella Terra Mall, Santiago"
                     ></iframe>
 
-                    {/* Map Overlay */}
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
@@ -935,7 +1051,6 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* Map Info Card */}
                   <div className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -964,7 +1079,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Additional Contact Info */}
             <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-8">
               <h3 className="text-2xl font-bold text-white mb-4">{t.contact.moreInfo}</h3>
               <p className="text-blue-100 mb-6 max-w-2xl mx-auto">{t.contact.moreInfoText}</p>
@@ -1029,19 +1143,16 @@ export default function HomePage() {
       {/* Login Modal */}
       {isLoginModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsLoginModalOpen(false)}
           ></div>
 
-          {/* Modal */}
           <div
             className={`relative w-full max-w-md transform transition-all duration-300 scale-100 ${
               isDarkMode ? "bg-slate-900" : "bg-white"
             } rounded-2xl shadow-2xl border ${isDarkMode ? "border-slate-700" : "border-slate-200"}`}
           >
-            {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
               <div>
                 <h2 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-slate-900"}`}>
@@ -1061,26 +1172,23 @@ export default function HomePage() {
               </Button>
             </div>
 
-            {/* Form */}
             <form
               className="p-6 space-y-4"
               onSubmit={(e) => {
                 e.preventDefault()
-                // Aquí iría la lógica de autenticación
                 console.log("Login attempt")
                 setIsLoginModalOpen(false)
               }}
             >
-              {/* Email Field */}
               <div className="space-y-2">
-                <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                   {t.login.email}
-                </label>
-                <input
+                </Label>
+                <Input
                   type="email"
                   required
                   placeholder={t.login.emailPlaceholder}
-                  className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full ${
                     isDarkMode
                       ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                       : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
@@ -1088,16 +1196,15 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
-                <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                   {t.login.password}
-                </label>
-                <input
+                </Label>
+                <Input
                   type="password"
                   required
                   placeholder={t.login.passwordPlaceholder}
-                  className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full ${
                     isDarkMode
                       ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                       : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
@@ -1105,29 +1212,24 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                  />
-                  <span className={`text-sm ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remember" />
+                  <Label htmlFor="remember" className={`text-sm ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                     {t.login.rememberMe}
-                  </span>
-                </label>
-                <button
-                  type="button"
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                  </Label>
+                </div>
+                <Button
+                  variant="link"
+                  className={`text-sm p-0 h-auto ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
                 >
                   {t.login.forgotPassword}
-                </button>
+                </Button>
               </div>
 
-              {/* Login Button */}
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white"
               >
                 {t.login.loginButton}
               </Button>
@@ -1139,19 +1241,16 @@ export default function HomePage() {
       {/* Quote Modal */}
       {isQuoteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsQuoteModalOpen(false)}
           ></div>
 
-          {/* Modal */}
           <div
-            className={`relative w-full max-w-2xl transform transition-all duration-300 scale-100 ${
+            className={`relative w-full max-w-lg transform transition-all duration-300 scale-100 ${
               isDarkMode ? "bg-slate-900" : "bg-white"
-            } rounded-2xl shadow-2xl border ${isDarkMode ? "border-slate-700" : "border-slate-200"} max-h-[90vh] overflow-y-auto`}
+            } rounded-2xl shadow-2xl border ${isDarkMode ? "border-slate-700" : "border-slate-200"}`}
           >
-            {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
               <div>
                 <h2 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-slate-900"}`}>
@@ -1170,42 +1269,40 @@ export default function HomePage() {
               </Button>
             </div>
 
-            {/* Form */}
             <form
-              className="p-6 space-y-6"
+              className="p-6 space-y-4"
               onSubmit={(e) => {
                 e.preventDefault()
-                // Aquí iría la lógica de envío del formulario
-                console.log("Quote form submitted")
+                console.log("Quote request submitted")
                 setIsQuoteModalOpen(false)
               }}
             >
-              {/* First Row - Company and Company Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                     {t.quote.company}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="text"
                     required
                     placeholder={t.quote.companyPlaceholder}
-                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full ${
                       isDarkMode
                         ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                         : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
                     }`}
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                     {t.quote.companyPhone}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="tel"
                     required
                     placeholder={t.quote.companyPhonePlaceholder}
-                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full ${
                       isDarkMode
                         ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                         : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
@@ -1214,32 +1311,32 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Second Row - Contact Name and Contact Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                     {t.quote.contactName}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="text"
                     required
                     placeholder={t.quote.contactNamePlaceholder}
-                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full ${
                       isDarkMode
                         ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                         : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
                     }`}
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
                     {t.quote.contactPhone}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="tel"
                     required
                     placeholder={t.quote.contactPhonePlaceholder}
-                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full ${
                       isDarkMode
                         ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                         : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
@@ -1248,90 +1345,59 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Third Row - Email and How did you hear */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
-                    {t.quote.email}
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    placeholder={t.quote.emailPlaceholder}
-                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      isDarkMode
-                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
-                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
-                    }`}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
-                    {t.quote.howDidYouHear}
-                  </label>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between ${
-                        isDarkMode
-                          ? "bg-slate-800 border-slate-600 text-white"
-                          : "bg-white border-slate-300 text-slate-900"
-                      }`}
-                    >
-                      <span className={selectedHowDidYouHear || isDarkMode ? "text-white" : "text-slate-500"}>
-                        {selectedHowDidYouHear || t.quote.selectOption}
-                      </span>
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                    {isDropdownOpen && (
-                      <div
-                        className={`absolute top-full left-0 right-0 mt-1 rounded-lg border shadow-lg z-10 ${
-                          isDarkMode ? "bg-slate-800 border-slate-600" : "bg-white border-slate-300"
-                        }`}
-                      >
-                        {t.quote.howOptions.map((option, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => {
-                              setSelectedHowDidYouHear(option)
-                              setIsDropdownOpen(false)
-                            }}
-                            className={`w-full px-4 py-3 text-left hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                              isDarkMode ? "text-white" : "text-slate-900"
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* reCAPTCHA */}
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
+              <div className="space-y-2">
+                <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  {t.quote.email}
+                </Label>
+                <Input
+                  type="email"
                   required
-                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                  placeholder={t.quote.emailPlaceholder}
+                  className={`w-full ${
+                    isDarkMode
+                      ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                      : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                  }`}
                 />
-                <span className={`text-sm ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
-                  {t.quote.robotCheck}
-                </span>
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="space-y-2">
+                <Label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  {t.quote.howDidYouHear}
+                </Label>
+                <Select value={selectedHowDidYouHear} onValueChange={setSelectedHowDidYouHear}>
+                  <SelectTrigger
+                    className={`w-full ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white"
+                        : "bg-white border-slate-300 text-slate-900"
+                    }`}
+                  >
+                    <SelectValue placeholder={t.quote.selectOption} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {t.quote.howOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox id="robot" required />
+                <Label htmlFor="robot" className={`text-sm ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  {t.quote.robotCheck}
+                </Label>
+              </div>
+
+              <div className="flex gap-4 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsQuoteModalOpen(false)}
-                  className={`flex-1 py-3 transition-all duration-300 ${
+                  className={`flex-1 ${
                     isDarkMode
                       ? "border-slate-600 text-slate-300 hover:bg-slate-800"
                       : "border-slate-300 text-slate-600 hover:bg-slate-50"
@@ -1341,7 +1407,7 @@ export default function HomePage() {
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                  className="flex-1 bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white"
                 >
                   {t.quote.send}
                 </Button>
@@ -1352,26 +1418,26 @@ export default function HomePage() {
       )}
 
       {/* WhatsApp Floating Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <a
-          href={`https://wa.me/18092416609?text=${language === "es" ? "Hola%2C%20me%20interesa%20conocer%20más%20sobre%20los%20servicios%20de%20HidalSoft" : "Hello%2C%20I%20am%20interested%20in%20learning%20more%20about%20HidalSoft%20services"}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative"
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          size="lg"
+          onClick={() =>
+            window.open(
+              "https://wa.me/18092416609?text=Hola,%20me%20interesa%20conocer%20más%20sobre%20sus%20servicios%20de%20facturación%20electrónica",
+              "_blank",
+            )
+          }
+          className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 group animate-bounce"
+          title={t.whatsapp.tooltip}
         >
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg hover:shadow-2xl transform hover:scale-110 transition-all duration-300 animate-bounce hover:animate-none">
-            <MessageCircle className="h-7 w-7 text-white group-hover:scale-110 transition-transform duration-300" />
-          </div>
-
-          {/* Pulse Animation */}
-          <div className="absolute inset-0 rounded-full bg-green-500 opacity-30 animate-ping"></div>
-
-          {/* Tooltip */}
-          <div className="absolute right-16 top-1/2 transform -translate-y-1/2 bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap shadow-lg">
-            {t.whatsapp.tooltip}
-            <div className="absolute top-1/2 -right-1 transform -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45"></div>
-          </div>
-        </a>
+          <svg
+            className="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+          </svg>
+        </Button>
       </div>
     </div>
   )
