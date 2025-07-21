@@ -19,6 +19,7 @@ import {
   Languages,
   LogIn,
   X,
+  ChevronDown,
 } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -156,6 +157,32 @@ const translations = {
       microsoft: "Microsoft",
       close: "Cerrar",
     },
+    quote: {
+      title: "Solicitud de Facturación Electrónica",
+      company: "Empresa (Razón social)",
+      companyPhone: "Teléfono de la empresa",
+      contactName: "Nombre del contacto",
+      contactPhone: "Teléfono de contacto",
+      email: "Email",
+      howDidYouHear: "¿Por qué medio te enteraste?",
+      selectOption: "Seleccione...",
+      howOptions: [
+        "Redes sociales",
+        "Recomendación",
+        "Búsqueda en Google",
+        "Publicidad",
+        "Referido de cliente",
+        "Otro",
+      ],
+      robotCheck: "No soy un robot",
+      close: "Cerrar",
+      send: "Enviar",
+      companyPlaceholder: "Nombre de su empresa",
+      companyPhonePlaceholder: "809-000-0000",
+      contactNamePlaceholder: "Su nombre completo",
+      contactPhonePlaceholder: "809-000-0000",
+      emailPlaceholder: "correo@empresa.com",
+    },
   },
   en: {
     nav: {
@@ -285,6 +312,25 @@ const translations = {
       microsoft: "Microsoft",
       close: "Close",
     },
+    quote: {
+      title: "Electronic Invoicing Request",
+      company: "Company (Business name)",
+      companyPhone: "Company phone",
+      contactName: "Contact name",
+      contactPhone: "Contact phone",
+      email: "Email",
+      howDidYouHear: "How did you hear about us?",
+      selectOption: "Select...",
+      howOptions: ["Social media", "Recommendation", "Google search", "Advertising", "Client referral", "Other"],
+      robotCheck: "I'm not a robot",
+      close: "Close",
+      send: "Send",
+      companyPlaceholder: "Your company name",
+      companyPhonePlaceholder: "809-000-0000",
+      contactNamePlaceholder: "Your full name",
+      contactPhonePlaceholder: "809-000-0000",
+      emailPlaceholder: "email@company.com",
+    },
   },
 }
 
@@ -297,6 +343,9 @@ export default function HomePage() {
   const [lastScrollY, setLastScrollY] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+  const [selectedHowDidYouHear, setSelectedHowDidYouHear] = useState("")
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const t = translations[language]
 
@@ -387,15 +436,17 @@ export default function HomePage() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <div className="flex-shrink-0 group">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
-                  HidalSoft
-                </h1>
+                <img
+                  src="/hidalsoft-logo.png"
+                  alt="HidalSoft Logo"
+                  className="h-6 w-auto group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-6">
+              <div className="flex items-baseline space-x-6">
                 {[
                   { key: "inicio", label: t.nav.inicio },
                   { key: "nosotros", label: t.nav.nosotros },
@@ -418,7 +469,7 @@ export default function HomePage() {
             </nav>
 
             {/* Controls */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* Language & Theme Toggle Combined */}
               <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                 {/* Language Toggle */}
@@ -467,7 +518,10 @@ export default function HomePage() {
               </Button>
 
               {/* CTA Button - Solo en desktop */}
-              <Button className="hidden lg:flex bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm px-4 py-2">
+              <Button
+                onClick={() => setIsQuoteModalOpen(true)}
+                className="hidden lg:flex bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm px-4 py-2"
+              >
                 {t.nav.solicitar}
               </Button>
             </div>
@@ -837,6 +891,7 @@ export default function HomePage() {
                 <div className="pt-6 space-y-4">
                   <Button
                     size="lg"
+                    onClick={() => setIsQuoteModalOpen(true)}
                     className="w-full bg-white text-blue-900 hover:bg-blue-50 text-lg px-8 py-3 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl group"
                   >
                     {t.contact.cta1}
@@ -1076,69 +1131,220 @@ export default function HomePage() {
               >
                 {t.login.loginButton}
               </Button>
+            </form>
+          </div>
+        </div>
+      )}
 
-              {/* Divider */}
-              <div className="relative my-6">
-                <div
-                  className={`absolute inset-0 flex items-center ${isDarkMode ? "text-slate-600" : "text-slate-400"}`}
-                >
-                  <div className={`w-full border-t ${isDarkMode ? "border-slate-700" : "border-slate-300"}`}></div>
+      {/* Quote Modal */}
+      {isQuoteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setIsQuoteModalOpen(false)}
+          ></div>
+
+          {/* Modal */}
+          <div
+            className={`relative w-full max-w-2xl transform transition-all duration-300 scale-100 ${
+              isDarkMode ? "bg-slate-900" : "bg-white"
+            } rounded-2xl shadow-2xl border ${isDarkMode ? "border-slate-700" : "border-slate-200"} max-h-[90vh] overflow-y-auto`}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+              <div>
+                <h2 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-slate-900"}`}>
+                  {t.quote.title}
+                </h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsQuoteModalOpen(false)}
+                className={`rounded-full p-2 ${
+                  isDarkMode ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-600"
+                }`}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Form */}
+            <form
+              className="p-6 space-y-6"
+              onSubmit={(e) => {
+                e.preventDefault()
+                // Aquí iría la lógica de envío del formulario
+                console.log("Quote form submitted")
+                setIsQuoteModalOpen(false)
+              }}
+            >
+              {/* First Row - Company and Company Phone */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.company}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={t.quote.companyPlaceholder}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                    }`}
+                  />
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className={`px-4 ${isDarkMode ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}`}>
-                    {t.login.or}
-                  </span>
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.companyPhone}
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder={t.quote.companyPhonePlaceholder}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                    }`}
+                  />
                 </div>
               </div>
 
-              {/* Social Login */}
-              <div className="space-y-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className={`w-full py-3 border transition-all duration-300 hover:scale-[1.02] ${
-                    isDarkMode
-                      ? "border-slate-600 hover:bg-slate-800 text-slate-300"
-                      : "border-slate-300 hover:bg-slate-50 text-slate-700"
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">G</span>
-                    </div>
-                    <span>{t.login.google}</span>
-                  </div>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className={`w-full py-3 border transition-all duration-300 hover:scale-[1.02] ${
-                    isDarkMode
-                      ? "border-slate-600 hover:bg-slate-800 text-slate-300"
-                      : "border-slate-300 hover:bg-slate-50 text-slate-700"
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-blue-600 rounded flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">M</span>
-                    </div>
-                    <span>{t.login.microsoft}</span>
-                  </div>
-                </Button>
+              {/* Second Row - Contact Name and Contact Phone */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.contactName}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={t.quote.contactNamePlaceholder}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                    }`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.contactPhone}
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder={t.quote.contactPhonePlaceholder}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                    }`}
+                  />
+                </div>
               </div>
 
-              {/* Sign Up Link */}
-              <div className="text-center pt-4">
-                <p className={`text-sm ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>
-                  {t.login.noAccount}{" "}
-                  <button
-                    type="button"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
-                  >
-                    {t.login.signUp}
-                  </button>
-                </p>
+              {/* Third Row - Email and How did you hear */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.email}
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder={t.quote.emailPlaceholder}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDarkMode
+                        ? "bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+                        : "bg-white border-slate-300 text-slate-900 placeholder-slate-500"
+                    }`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={`text-sm font-medium ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    {t.quote.howDidYouHear}
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className={`w-full px-4 py-3 rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between ${
+                        isDarkMode
+                          ? "bg-slate-800 border-slate-600 text-white"
+                          : "bg-white border-slate-300 text-slate-900"
+                      }`}
+                    >
+                      <span className={selectedHowDidYouHear || isDarkMode ? "text-white" : "text-slate-500"}>
+                        {selectedHowDidYouHear || t.quote.selectOption}
+                      </span>
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    {isDropdownOpen && (
+                      <div
+                        className={`absolute top-full left-0 right-0 mt-1 rounded-lg border shadow-lg z-10 ${
+                          isDarkMode ? "bg-slate-800 border-slate-600" : "bg-white border-slate-300"
+                        }`}
+                      >
+                        {t.quote.howOptions.map((option, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => {
+                              setSelectedHowDidYouHear(option)
+                              setIsDropdownOpen(false)
+                            }}
+                            className={`w-full px-4 py-3 text-left hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                              isDarkMode ? "text-white" : "text-slate-900"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* reCAPTCHA */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  required
+                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                />
+                <span className={`text-sm ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  {t.quote.robotCheck}
+                </span>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsQuoteModalOpen(false)}
+                  className={`flex-1 py-3 transition-all duration-300 ${
+                    isDarkMode
+                      ? "border-slate-600 text-slate-300 hover:bg-slate-800"
+                      : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {t.quote.close}
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-800 hover:to-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                >
+                  {t.quote.send}
+                </Button>
               </div>
             </form>
           </div>
